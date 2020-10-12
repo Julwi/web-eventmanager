@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" type="text/css" href="static/css/styles.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Tempus Dominus CSS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"
+        integrity="sha512-2JBCbWoMJPH+Uj7Wq5OLub8E5edWHlTM4ar/YJkZh3plwB2INhhOC3eDoqHm1Za/ZOSksrLlURLoyXVdfQXqwg==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css"
+        integrity="sha512-PMjWzHVtwxdq7m7GIxBot5vdxUY+5aKP9wpKtvnNBZrVv1srI8tU6xvFMzG8crLNcMj/8Xl/WWmo/oAP/40p1g==" crossorigin="anonymous" />
+
+    <!-- Import jquery library from CDN (Content Delivery Network) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <!-- Change title if render Template has specific title -->
+    {%if title%}
+    <title>
+        Eventmanager - {{title}}
+    </title>
+    {% else %}
+    <title>
+        Eventmanager
+    </title>
+    {% endif %}
+</head>
+
+<body>
+    <header class="header_flex">
+        <div class="button_flex_container">
+            {% if current_user.is_authenticated %}
+            <a class="logo" href="{{url_for("overview")}}"><button class="logo_button">Eventmanager</button></a>
+            {% else %}
+            <a class="logo" href="{{url_for("home")}}"><button class="logo_button">Eventmanager</button></a>
+            {% endif %}
+        </div>
+        <nav class="navbar_items_links">
+            {% if current_user.is_authenticated %}
+            <ul class="navbar_list_container">
+                <li class="nav_item"><a class="nav_link" href="{{url_for("create")}}">Create Event</a></li>
+                <li class="nav_item"><a class="nav_link" href="{{url_for("archive")}}">Archive</a></li>
+                <li class="nav_item"><a class="nav_link" href="{{url_for("logout")}}">Logout</a></li>
+            </ul>
+            {% else %}
+            <ul class="navbar_list_container">
+                <li class="nav_item"><a class="nav_link" href="{{url_for("login")}}">Login</a></li>
+                <li class="nav_item"><a class="nav_link" href="{{url_for("register")}}">Register</a></li>
+            </ul>
+            {% endif %}
+        </nav>
+
+    </header>
+
+    <!-- 
+    Get flashed messages (if there are any) and display them below header
+    Use bootstrap class alert and insert message category
+    -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div> 
+            {% for category, message in messages %}
+                <div id="alert_no_margin" class="alert alert-{{category}}">
+                    {{message}}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+
+    {% if (title != "Login") and (title != "Register") %}
+    <section id="showcase">
+        <div class="container_showcase">
+            <h1>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            </h1>
+        </div>
+    </section>
+    {% endif %}
+
+
+    <main role="main">
+        {% block content %}{% endblock %}
+    </main>
+
+
+    <footer class="main-footer">
+        <p>Copyright &copy; 2020 Eventmanager</p>
+    </footer>
+
+    <script>
+        // Remove alert after 5 seconds
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        }, 5000);
+    </script>
+
+    <script>
+        // Scroll to top after reload
+        $(document).ready(function(){
+        $(this).scrollTop(0);
+        });
+    </script>
+</body>
+
+</html>

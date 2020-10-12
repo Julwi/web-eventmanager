@@ -1,0 +1,270 @@
+/* Import 'Montserrat' font*/
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+
+/* 
+#########################################
+# General Styling
+#########################################
+*/ 
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+}
+
+body {
+    background-color:#FCFAF9;
+    color: rgb(85,85,85);
+}
+
+.container{
+	width:80%;
+    margin:auto;
+    margin-top: 40px;
+    margin-bottom: 40px;
+	overflow:hidden;
+}
+
+/* 
+#########################################
+# Header Styling
+#########################################
+*/ 
+
+.header_flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px 5%;
+    background-color: #5E5E5E;
+    border-style: none;
+}
+
+
+.button_flex_container {
+    /* 
+    Button positioning (left) and preventing link bug 
+    (Button kann durch flex überall in navbar gedrückt werden)
+    */
+    flex: 1;
+}
+
+.logo {
+    cursor: pointer;
+    color: rgb(244, 244, 244);
+    background-color: #5E5E5E;
+    border-width: 1px;
+    border-radius: 25px;
+}
+
+.logo_button {
+    /* font styling */
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #FCFAF9;
+
+    /* button styling */
+    padding: 10px 25px;
+    background-color: #333333;
+    border: none;
+    border-width: 1px;
+    border-radius: 25px;
+    outline: none; /* remove rectangular border */
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+
+.logo_button:focus {
+    outline: none; /* remove rectangular border on button click */
+}
+
+.navbar_items_links {
+    background-color: #333333;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 25px;
+    border: none;
+    border-width: 1px;
+}
+
+.navbar_list_container{
+    margin: 0;
+}
+
+.nav_item {
+    background-color: #333333;
+    font-size: 16px;
+    list-style: none;
+    display: inline-block;
+    padding: 0px 20px;
+}
+
+.nav_link {
+    background-color: #333333;
+    font-size: 16px;
+    text-decoration: none;
+    color: rgb(244, 244, 244);
+    transition: all 0.3s ease 0s;
+    /* the same
+    transition-property: all;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    */
+}
+
+.nav_link:hover, .logo_button:hover {
+    color: #ecb998;
+    text-decoration: none;
+}
+
+/* 
+#########################################
+# Header Styling - Alerts
+#########################################
+*/ 
+
+#alert_no_margin {
+    margin-bottom: 0px;
+}
+
+/* 
+#########################################
+# Showcase Background
+#########################################
+*/ 
+
+.container_showcase{
+    width: 80%;
+    margin:auto;
+	overflow:hidden;
+}
+
+#showcase{
+	background-image:url("/static/images/showcase.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+	min-height:400px;
+    text-align: center;
+}
+
+#showcase h1{
+	color: #FCFAF9;
+	font-size: 50px;
+	line-height: 1.6em;
+	padding-top: 100px;
+}
+
+/* 
+#########################################
+# Main Styling
+#########################################
+*/ 
+
+.container_flexbox {
+    /* Use main as flexbox for positioning */
+    display: flex;
+    align-items: flex-end;
+}
+
+#intro{
+    flex-basis: 70%;
+    padding:0 30px;
+}
+
+#intro>h1{
+    margin-bottom: 10px;
+}
+
+#intro>p{
+    margin: 0;
+}
+
+#sidebar{
+    flex-basis: 30%;
+    background: #333333;
+    color:#FCFAF9;
+    padding:15px;
+    border: solid #FCFAF9;
+    border-width: 1px;
+    border-radius: 25px;
+}
+
+#sidebar>p {
+    margin: 0;
+}
+
+.main-footer{
+	background: #5E5E5E;
+	color:#FCFAF9;
+	text-align: center;
+	padding:20px;
+}
+
+/* 
+#########################################
+# Main Styling - Forms
+#########################################
+*/ 
+
+
+.container_colored {
+    background-image: linear-gradient( 135deg, #FD6E6A 10%, #FFC600 100%); 
+    margin:auto;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.container_forms {
+    background-color: #f9f8f7;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px 25px;
+    border-color: #FCFAF9;
+    border-style: solid;
+    border-radius: 25px;
+    border-width: 1px;
+    
+}
+
+
+/* 
+media query after the original classes so they will be overwritten
+*/
+
+/* screens that aren´t larger than 600px use the following */
+@media(max-width:670px){
+    .flexbox_container {
+        flex-wrap: wrap;
+    }
+
+    /* Wrap main content on landing page */
+    #intro{
+        flex-basis: auto;
+    }
+
+    #sidebar{
+        flex-basis: auto;
+        margin: 15px;
+    }
+
+    /* Wrap header */
+    header {
+        flex-direction: column;
+    }
+
+    .navbar_items_links {
+        padding: 10px 40px;
+        margin-top: 10px;
+    }
+
+    .nav_item {
+        display: block;
+        padding: 3px 20px;
+    }
+}
