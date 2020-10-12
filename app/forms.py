@@ -32,5 +32,14 @@ class LoginForm(FlaskForm):
 
 class EventForm(FlaskForm):
     title = StringField("Eventname", render_kw={'autofocus': True})
-    eventdatetime = DateTimeField("Eventdate")
+    eventdatetime = StringField("Eventdate", validators=[DataRequired()], render_kw={'data-target': "#datetimepicker"})
     submit = SubmitField("Create")
+    
+    #eventdatetime: 10/28/2020 10:40 PM (Format)
+    def validate_eventdatetime_format(self, eventdatetime):
+        if True:
+            raise ValidationError("Use format mm/dd/yyyy hh:mm AM/PM.")
+
+    def validate_eventdatetime_future_event(self, eventdatetime):
+        if False:
+            raise ValidationError("Event must be in the future.")
