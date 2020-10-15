@@ -21,32 +21,29 @@
                         {{ form.title(class="form-control")}}
                     {% endif %}
                 </div>
-                        <div id="test" class="form-group ">
-                            {{ form.eventdatetime.label(class="form-control-label")}}
-                            <div class="input-group date" id="datetimepicker" data-target-input="nearest">
-                                {% if form.eventdatetime.errors %}
-                                    {{ form.eventdatetime(class="form-control datetimepicker-input is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.eventdatetime.errors %}
-                                            <span> {{error}} </span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.eventdatetime(class="form-control datetimepicker-input")}}
-                                {% endif %}
-                                <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
-                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    <div id="test" class="form-group ">
+                        {{ form.eventdatetime.label(class="form-control-label")}}
+                        <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                            {% if form.eventdatetime.errors %}
+                                {{ form.eventdatetime(class="form-control datetimepicker-input is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.eventdatetime.errors %}
+                                        <span> {{error}} </span>
+                                    {% endfor %}
                                 </div>
+                            {% else %}
+                                {{ form.eventdatetime(class="form-control datetimepicker-input")}}
+                            {% endif %}
+                            <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                             </div>
                         </div>
+                    </div>
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-dark") }}
             </div>
         </form>
-        <div class="border-top pt-3">
-            <small class="text-muted ml-2"> Already Have An Account? <a href="{{ url_for('login') }}">Sign In</a> </small>
-        </div>
     </div>
 </div>
 

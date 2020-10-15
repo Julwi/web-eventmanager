@@ -75,8 +75,8 @@ def create():
     form = EventForm()
 
     if form.validate_on_submit():
-        # TODO: Create Event
-        print("TODO")
+        # TODO: Event to db
+        return redirect(url_for("overview"))
 
     return render_template("create.html", title="Create Event", form=form)
 
