@@ -1,10 +1,14 @@
 # Define forms for application
+from datetime import datetime
+from time import localtime, strftime, strptime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.fields.html5 import DateTimeField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import BooleanField, PasswordField, StringField, SubmitField
+from wtforms.validators import (DataRequired, Email, EqualTo, Length, Regexp,
+                                ValidationError)
+
 from app.models import User
+
 
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[
@@ -29,8 +33,23 @@ class LoginForm(FlaskForm):
     remember = BooleanField("Remember Me")
     submit = SubmitField("Login")
 
+# eventdatetime: 10/28/2020 10:40 PM (Format)
+
 
 class EventForm(FlaskForm):
     title = StringField("Eventname", render_kw={'autofocus': True})
-    eventdatetime = DateTimeField("Eventdate")
+    eventdatetime = StringField("Eventdate", validators=[DataRequired(),
+                                                         Regexp('\d\d/\d\d/\d\d\d\d\s((1[0-2]:[0-5]\d\s)|[1-9]:[0-5]\d\s)[A,P]M$', message="Use format mm/dd/yyyy hh:mm AM/PM")],
+                                render_kw={'data-target': "#datetimepicker"})
     submit = SubmitField("Create")
+
+    def validate_eventdatetime(self, eventdatetime):
+        basis_seconds = datetime(1970, 1, 1)
+        current_datetime = strftime("%m/%d/%Y %I:%M %p", localtime())
+        time_current = datetime.strptime(current_datetime, "%m/%d/%Y %I:%M %p")
+        time_event = datetime.strptime(
+            str(eventdatetime.data), "%m/%d/%Y %I:%M %p")
+
+        # if event lies in the past (less total seconds than current time stamp)
+        if (time_current-basis_seconds).total_seconds() > (time_event-basis_seconds).total_seconds():
+            raise ValidationError("Event must be in the future.")
