@@ -2,6 +2,14 @@
 
 {% block content %}
 <div class="container">
-    <h1>Overview here!</h1>
+        {% for event_rows in events | batch(3, '&nbsp;') %}
+        <div class="container_flexbox_events">
+            {% for event in event_rows %}
+                {% if event.user_id == current_user.id %}
+                    <div class="event">{{event.title}}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
 </div>
 {% endblock content %}

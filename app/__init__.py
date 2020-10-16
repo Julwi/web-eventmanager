@@ -13,19 +13,19 @@ from werkzeug.exceptions import (HTTPException, InternalServerError,
                                  default_exceptions)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-# Setting application.py: $env:FLASK_APP=app.py
-# For Debugging in Powershell: $env:FLASK_DEBUG = 1
-
 # Configure application (create instance of Flask)
 app = Flask(__name__)
+
 # Secret key for application (Security for client side session)
 app.config["SECRET_KEY"] = "0888b3f10d30ae69a206e6d442a82e4b"
+
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Configure SQLAlchemy
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///site.db"
 db = SQLAlchemy(app)
+
 # Configure bcrypt
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)

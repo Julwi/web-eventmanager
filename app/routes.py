@@ -1,3 +1,6 @@
+from datetime import datetime
+from time import strptime
+
 from flask import flash, url_for, redirect, render_template, request, session
 from app import app, bcrypt, db
 from app.forms import LoginForm, RegistrationForm, EventForm
@@ -34,7 +37,10 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for("overview"))
+
+            # if user tried to access a forbidden page before login there is a next argument added
+            next_page = request.args.get("next")
+            return redirect(next_page) if next_page else redirect(url_for("overview"))
 
         else:
             flash("Login failed. Please check username and password.", "danger")
@@ -66,7 +72,8 @@ def register():
 @app.route("/overview")
 @login_required
 def overview():
-    return render_template("overview.html", title="Overview")
+    events = Event.query.filter_by(user_id=current_user.id)
+    return render_template("overview.html", title="Overview", events=events)
 
 
 @app.route("/create", methods=["GET", "POST"])
@@ -75,7 +82,14 @@ def create():
     form = EventForm()
 
     if form.validate_on_submit():
-        # TODO: Event to db
+
+        event = Event(title=form.title.data, 
+                        date_eventdatetime=datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p"), 
+                        description=form.description.data,
+                        user_id=current_user.id)
+        db.session.add(event)
+        db.session.commit()
+        flash("Your event has been created!", "success")
         return redirect(url_for("overview"))
 
     return render_template("create.html", title="Create Event", form=form)

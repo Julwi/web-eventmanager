@@ -25,7 +25,7 @@ class User (db.Model, UserMixin):
 
 class Event (db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False, default="Event")
+    title = db.Column(db.String, nullable=False)
     date_created = db.Column(
         db.DateTime, nullable=False, default=datetime.utcnow)
     date_eventdatetime = db.Column(db.DateTime, nullable=False)

@@ -198,11 +198,35 @@ body {
     margin: 0;
 }
 
+
 .main-footer{
 	background: #5E5E5E;
 	color:#FCFAF9;
 	text-align: center;
 	padding:20px;
+}
+
+/* 
+#########################################
+# Main Styling - Overview
+#########################################
+*/ 
+
+.container_flexbox_events {
+    /* Use main as flexbox for positioning */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.event {
+    flex-basis: 30%;
+    background: #333333;
+    color:#FCFAF9;
+    padding:15px;
+    border: solid #FCFAF9;
+    border-width: 1px;
+    border-radius: 25px; 
 }
 
 /* 
