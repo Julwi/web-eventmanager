@@ -1,11 +1,12 @@
 from datetime import datetime
 from time import strptime
 
-from flask import flash, url_for, redirect, render_template, request, session
+from flask import flash, url_for, redirect, render_template, request, session, abort
 from app import app, bcrypt, db
 from app.forms import LoginForm, RegistrationForm, EventForm
 from app.models import User, Event
 from flask_login import login_user, current_user, logout_user, login_required
+
 
 @app.after_request
 # Ensure responses aren't cached
@@ -22,6 +23,31 @@ def home():
     if current_user.is_authenticated:
         return redirect(url_for("overview"))
     return render_template("home.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("overview"))
+
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        # Hash password and add user to db
+        hashed_password = bcrypt.generate_password_hash(
+            form.password.data).decode("utf-8")
+        user = User(username=form.username.data,
+                    email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+
+        # Flash for sending messages in Flask; First argument is message, second a category (optional)
+        flash(
+            f"Account for {form.username.data} was created. You can login now!", "success")
+        return redirect(url_for("login"))
+
+    else:
+        return render_template("register.html", title="Register", form=form)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -47,26 +73,11 @@ def login():
     return render_template("login.html", title="Login", form=form)
 
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for("overview"))
-
-    form = RegistrationForm()
-    
-    if form.validate_on_submit():
-        # Hash password and add user to db
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        user = User (username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-
-        # Flash for sending messages in Flask; First argument is message, second a category (optional)
-        flash(f"Account for {form.username.data} was created. You can login now!", "success")
-        return redirect(url_for("login"))
-
-    else:
-        return render_template("register.html", title="Register", form=form)
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("home"))
 
 
 @app.route("/overview")
@@ -83,26 +94,44 @@ def create():
 
     if form.validate_on_submit():
 
-        event = Event(title=form.title.data, 
-                        date_eventdatetime=datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p"), 
-                        description=form.description.data,
-                        user_id=current_user.id)
+        event = Event(title=form.title.data,
+                      date_eventdatetime=datetime.strptime(
+                          form.eventdatetime.data, "%m/%d/%Y %I:%M %p"),
+                      description=form.description.data,
+                      user_id=current_user.id)
         db.session.add(event)
         db.session.commit()
         flash("Your event has been created!", "success")
         return redirect(url_for("overview"))
 
-    return render_template("create.html", title="Create Event", form=form)
+    return render_template("create.html", title="Create Event", form=form, legend="Create Your Next Event!")
+
+
+@app.route("/update/<int:event_id>", methods=["GET", "POST"])
+@login_required
+def update(event_id):
+    event = Event.query.get_or_404(event_id)
+    if event.user_id != current_user.id:
+        abort(403)
+    form = EventForm()
+    """
+    if form.validate_on_submit:
+        event.title = form.title.data
+        #event.date_eventdatetime = datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
+        event.description = form.description.data
+        db.session.commit()
+        flash("Your event has been updated!", "success")
+        return redirect(url_for("overview"))
+    """
+
+    form.title.data = event.title
+    form.eventdatetime.data = event.date_eventdatetime
+    form.description.data = event.description
+    form.submit._value = "Update"
+    return render_template("update.html", title="Update Event", event=event, form=form, legend="Update Post")
 
 
 @app.route("/archive")
 @login_required
-def archive():    
+def archive():
     return render_template("archive.html", title="Register")
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("home"))

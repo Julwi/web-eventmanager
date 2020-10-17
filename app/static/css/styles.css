@@ -19,12 +19,61 @@ body {
     color: rgb(85,85,85);
 }
 
-.container{
-	width:80%;
-    margin:auto;
-    margin-top: 40px;
-    margin-bottom: 40px;
+.container_colored {
+    width: 100%;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    overflow: hidden;
+    background-image: linear-gradient( 135deg, #FD6E6A 10%, #FFC600 100%); 
+}
+
+
+.container_content{
+    width:80%;
+    margin: auto;
 	overflow:hidden;
+}
+
+/* 
+#########################################
+# Tool/Helper Styling
+#########################################
+*/ 
+
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+  
+/* Tooltip text */
+.tooltip .tooltiptext {
+visibility: hidden;
+width: 120px;
+background-color: black;
+color: #fff;
+text-align: center;
+padding: 5px 0;
+border-radius: 6px;
+border-style: none;
+
+/* Position the tooltip text - see examples below! */
+position: absolute;
+z-index: 1;
+}
+  
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+visibility: visible;
+}
+
+.link_flexbox_container {
+    /* 
+    Container for links in flexbox. Avoid link error.
+    (Button kann durch flex überall in navbar gedrückt werden)
+    */
+    flex: 1;
 }
 
 /* 
@@ -42,14 +91,6 @@ body {
     border-style: none;
 }
 
-
-.button_flex_container {
-    /* 
-    Button positioning (left) and preventing link bug 
-    (Button kann durch flex überall in navbar gedrückt werden)
-    */
-    flex: 1;
-}
 
 .logo {
     cursor: pointer;
@@ -189,7 +230,7 @@ body {
     background: #333333;
     color:#FCFAF9;
     padding:15px;
-    border: solid #FCFAF9;
+    border-style: none;
     border-width: 1px;
     border-radius: 25px;
 }
@@ -213,10 +254,12 @@ body {
 */ 
 
 .container_flexbox_events {
-    /* Use main as flexbox for positioning */
+    /* Flexbox for horizontal event positioning */
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
+    padding-top: 2em;
+    padding-bottom: 2em
 }
 
 .event {
@@ -224,9 +267,27 @@ body {
     background: #333333;
     color:#FCFAF9;
     padding:15px;
-    border: solid #FCFAF9;
+    border-style: none;
     border-width: 1px;
-    border-radius: 25px; 
+    border-radius: 25px;
+    
+    /* Flexbox for vertical positioning inside event forms*/
+    display: flex;
+    flex-direction: column;
+}
+
+.event h3{
+    /* Header at the beginning of event form */
+    flex: 3;
+}
+
+.event small{
+    /* Small at the end of event form */
+    flex: 1
+}
+
+.event a{
+    font-size: 12px;
 }
 
 /* 
@@ -234,14 +295,6 @@ body {
 # Main Styling - Forms
 #########################################
 */ 
-
-
-.container_colored {
-    background-image: linear-gradient( 135deg, #FD6E6A 10%, #FFC600 100%); 
-    margin:auto;
-    padding-top: 40px;
-    padding-bottom: 40px;
-}
 
 .container_forms {
     background-color: #f9f8f7;

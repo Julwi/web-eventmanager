@@ -1,15 +1,31 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container_colored">
+    <div class="container_content">
         {% for event_rows in events | batch(3, '&nbsp;') %}
         <div class="container_flexbox_events">
             {% for event in event_rows %}
+            <div class="event" data-toggle="tooltip" data-placement="bottom" title="{{event.description}}">
                 {% if event.user_id == current_user.id %}
-                    <div class="event">{{event.title}}</div>
+                        <h3>{{event.title}}</h3>
+                        <small class="border-top pt-1"><i>Due Date:</i><br> {{event.date_eventdatetime}}</small>
+                        <span class="link_flexbox_container">
+                            <a href="{{url_for("update", event_id=event.id)}}">Update</a>
+                        </span>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>
         {% endfor %}
+    </div>
 </div>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    })
+</script>
+
+
 {% endblock content %}

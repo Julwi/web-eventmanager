@@ -33,11 +33,10 @@ class LoginForm(FlaskForm):
     remember = BooleanField("Remember Me")
     submit = SubmitField("Login")
 
-# eventdatetime: 10/28/2020 10:40 PM (Format)
-
 
 class EventForm(FlaskForm):
-    title = StringField("Eventname", validators=[DataRequired()], render_kw={'autofocus': True})
+    title = StringField("Eventname", validators=[
+                        DataRequired()], render_kw={'autofocus': True})
     eventdatetime = StringField("Eventdate", validators=[DataRequired(),
                                                          Regexp('\d\d/\d\d/\d\d\d\d\s((1[0-2]:[0-5]\d\s)|[1-9]:[0-5]\d\s)[A,P]M$', message="Use format mm/dd/yyyy hh:mm AM/PM")],
                                 render_kw={'data-target': "#datetimepicker"})
