@@ -309,6 +309,9 @@ visibility: visible;
     
 }
 
+form textarea#description {
+    height: 200px;
+}
 
 /* 
 #########################################

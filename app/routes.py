@@ -1,5 +1,5 @@
 from datetime import datetime
-from time import strptime
+from time import strptime, strftime
 
 from flask import flash, url_for, redirect, render_template, request, session, abort
 from app import app, bcrypt, db
@@ -91,10 +91,9 @@ def overview():
 @login_required
 def create():
     form = EventForm()
-    form.submit.label.text = 'Create'
 
+    # If entered values are valid commit event to db
     if form.validate_on_submit():
-
         event = Event(title=form.title.data,
                       date_eventdatetime=datetime.strptime(
                           form.eventdatetime.data, "%m/%d/%Y %I:%M %p"),
@@ -105,32 +104,34 @@ def create():
         flash("Your event has been created!", "success")
         return redirect(url_for("overview"))
 
+    form.submit.label.text = 'Create'
     return render_template("create.html", title="Create Event", form=form, legend="Create Your Next Event!")
 
 
 @app.route("/update/<int:event_id>", methods=["GET", "POST"])
 @login_required
 def update(event_id):
+    # Query event from db and check if user is author
     event = Event.query.get_or_404(event_id)
     if event.user_id != current_user.id:
         abort(403)
 
     form = EventForm()
-    form.submit.label.text = 'Update'
-    """
-    if form.validate_on_submit:
+
+    # If entered values are valid commit changes to db
+    if form.validate_on_submit():
         event.title = form.title.data
-        #event.date_eventdatetime = datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
+        event.date_eventdatetime = datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
         event.description = form.description.data
         db.session.commit()
         flash("Your event has been updated!", "success")
         return redirect(url_for("overview"))
-    """
 
+    # Fill form with event data from db
     form.title.data = event.title
-    form.eventdatetime.data = event.date_eventdatetime
+    form.eventdatetime.data = event.date_eventdatetime.strftime("%m/%d/%Y %I:%M %p")
     form.description.data = event.description
-    form.submit._value = "Update"
+    form.submit.label.text = 'Update'
     return render_template("update.html", title="Update Event", event=event, form=form, legend="Update Post")
 
 
