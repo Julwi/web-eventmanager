@@ -91,6 +91,7 @@ def overview():
 @login_required
 def create():
     form = EventForm()
+    form.submit.label.text = 'Create'
 
     if form.validate_on_submit():
 
@@ -113,7 +114,9 @@ def update(event_id):
     event = Event.query.get_or_404(event_id)
     if event.user_id != current_user.id:
         abort(403)
+
     form = EventForm()
+    form.submit.label.text = 'Update'
     """
     if form.validate_on_submit:
         event.title = form.title.data

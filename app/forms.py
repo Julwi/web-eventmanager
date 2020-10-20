@@ -2,7 +2,8 @@
 from datetime import datetime
 from time import localtime, strftime, strptime
 
-from flask_wtf import FlaskForm
+import flask_wtf
+from flask_wtf import FlaskForm, Form
 from wtforms import BooleanField, PasswordField, StringField, TextAreaField, SubmitField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length, Regexp,
                                 ValidationError)
@@ -38,10 +39,11 @@ class EventForm(FlaskForm):
     title = StringField("Eventname", validators=[
                         DataRequired()], render_kw={'autofocus': True})
     eventdatetime = StringField("Eventdate", validators=[DataRequired(),
-                                                         Regexp('\d\d/\d\d/\d\d\d\d\s((1[0-2]:[0-5]\d\s)|[1-9]:[0-5]\d\s)[A,P]M$', message="Use format mm/dd/yyyy hh:mm AM/PM")],
-                                render_kw={'data-target': "#datetimepicker"})
+                                                        Regexp('\d\d/\d\d/\d\d\d\d\s((1[0-2]:[0-5]\d\s)|[1-9]:[0-5]\d\s)[A,P]M$', 
+                                                        message="Use format mm/dd/yyyy hh:mm AM/PM")],
+                                                        render_kw={'data-target': "#datetimepicker"})
     description = TextAreaField("Description")
-    submit = SubmitField("Create")
+    submit = SubmitField()
 
     def validate_eventdatetime(self, eventdatetime):
         basis_seconds = datetime(1970, 1, 1)
