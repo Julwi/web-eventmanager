@@ -128,12 +128,26 @@ def update(event_id):
         return redirect(url_for("overview"))
 
     # Fill form with event data from db
-    form.title.data = event.title
-    form.eventdatetime.data = event.date_eventdatetime.strftime("%m/%d/%Y %I:%M %p")
-    form.description.data = event.description
-    form.submit.label.text = 'Update'
+    if request.method == "GET":
+        form.title.data = event.title
+        form.eventdatetime.data = event.date_eventdatetime.strftime("%m/%d/%Y %I:%M %p")
+        form.description.data = event.description
+        form.submit.label.text = 'Update'
     return render_template("update.html", title="Update Event", event=event, form=form, legend="Update Post")
 
+
+@app.route("/delete/<int:event_id>", methods=["POST"])
+@login_required
+def delete(event_id):
+    # Query event from db and check if user is author
+    event = Event.query.get_or_404(event_id)
+    if event.user_id != current_user.id:
+        abort(403)
+
+    db.session.delete(event)
+    db.session.commit()
+    flash("Event has been deleted", "success")
+    return redirect(url_for("overview"))
 
 @app.route("/archive")
 @login_required

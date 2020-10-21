@@ -11,7 +11,8 @@
                         <h3>{{event.title}}</h3>
                         <small class="border-top pt-1"><i>Due Date:</i><br> {{event.date_eventdatetime}}</small>
                         <span class="link_flexbox_container">
-                            <a href="{{url_for("update", event_id=event.id)}}">Update</a>
+                            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{url_for("update", event_id=event.id)}}">Update</a>
+                            <button data-id="{{event.id}}" type="button" class="passid btn btn-danger btn-sm mt-1 mb-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
                         </span>
                     </div>
                 {% endif %}
@@ -20,12 +21,35 @@
         {% endfor %}
     </div>
 </div>
-
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Delete Event?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form id=deleteForm action="#" method="POST">
+          <input id="eventId" class="btn btn-danger" type="submit" value="Delete">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Pass event id to modal for deletion route
+  $(document).on("click", ".passid", function () {
+     var myEventId = $(this).data('id');
+     $('#deleteForm').attr('action', `/delete/${myEventId}`);
+});
+</script>
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     })
 </script>
-
-
 {% endblock content %}
