@@ -6,8 +6,8 @@
         {% for event_rows in events | batch(3, '&nbsp;') %}
         <div class="container_flexbox_events">
             {% for event in event_rows %}
-            <div class="event" data-toggle="tooltip" data-placement="bottom" title="{{event.description}}">
-                {% if event.user_id == current_user.id %}
+            {% if event.user_id == current_user.id %}
+            <div id=event_field_{{event.id}} title="{{event.description}}" data-duedate="{{time["{{event.id}}"]}}" class="event" data-toggle="tooltip" data-placement="bottom">
                         <h3>{{event.title}}</h3>
                         <small class="border-top pt-1"><i>Due Date:</i><br> {{event.date_eventdatetime}}</small>
                         <span class="link_flexbox_container">
@@ -15,7 +15,7 @@
                             <button data-id="{{event.id}}" type="button" class="passid btn btn-danger btn-sm mt-1 mb-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
                         </span>
                     </div>
-                {% endif %}
+            {% endif %}
             {% endfor %}
         </div>
         {% endfor %}
@@ -40,6 +40,22 @@
     </div>
   </div>
 </div>
+<script>
+  var element = document.querySelectorAll('[id^="event_field_"]');
+  console.log(element);
+
+  // Add eventlistener to events
+  for (i = 0, len = element.length; i < len; i++) {
+    var elementDueDate = element[i].attributes.getNamedItem("data-duedate");
+    console.log(elementDueDate);
+    element[i].addEventListener("dateOverdue", checkDate())
+    //console.log(element[i].attributes.getNamedItem("data-duedate"));
+  }
+
+  // Eventhandler
+  function checkDate() { 
+  } 
+</script>
 <script>
   // Pass event id to modal for deletion route
   $(document).on("click", ".passid", function () {

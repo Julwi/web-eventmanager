@@ -34,4 +34,4 @@ class Event (db.Model):
 
     def __repr__(self):
         """ Define print format for event """
-        return f"Event('{self.title}', '{self.date_created}', '{self.date_eventdatetime}')"
+        return f"Event('{self.title}', '{self.date_created}', '{self.date_eventdatetime}', '{self.author})"
