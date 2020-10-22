@@ -7,7 +7,7 @@
         <div class="container_flexbox_events">
             {% for event in event_rows %}
             {% if event.user_id == current_user.id %}
-            <div id=event_field_{{event.id}} title="{{event.description}}" data-duedate="{{time["{{event.id}}"]}}" class="event" data-toggle="tooltip" data-placement="bottom">
+            <div id=event_field_{{event.id}} title="{{event.description}}" data-duedate="{{time[event.id]}}" class="event" data-toggle="tooltip" data-placement="bottom">
                         <h3>{{event.title}}</h3>
                         <small class="border-top pt-1"><i>Due Date:</i><br> {{event.date_eventdatetime}}</small>
                         <span class="link_flexbox_container">
@@ -48,7 +48,7 @@
   for (i = 0, len = element.length; i < len; i++) {
     var elementDueDate = element[i].attributes.getNamedItem("data-duedate");
     console.log(elementDueDate);
-    element[i].addEventListener("dateOverdue", checkDate())
+    element[i].addEventListener("overdue", checkDate())
     //console.log(element[i].attributes.getNamedItem("data-duedate"));
   }
 
