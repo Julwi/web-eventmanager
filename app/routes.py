@@ -83,17 +83,8 @@ def logout():
 @app.route("/overview")
 @login_required
 def overview():
-    time_js = {}
     events = Event.query.filter_by(user_id=current_user.id)
-
-    # Store transformed datetime (epoch timestamp) in dictionary to enable JS Date objects
-    # Javascript's Date() takes milliseconds as an argument; Python's uses seconds.
-    for event in events:
-        transformed_timestamp = int(mktime(event.date_eventdatetime.timetuple())) * 1000
-        time_js[event.id] = transformed_timestamp
-    print(time_js[2])
-    # TODO: Access Time in overview html and continue with eventhandler
-    return render_template("overview.html", title="Overview", events=events, time=time_js )
+    return render_template("overview.html", title="Overview", events=events)
 
 
 @app.route("/create", methods=["GET", "POST"])
