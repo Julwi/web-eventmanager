@@ -32,6 +32,11 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
+# Configure Flask_APScheduler
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
