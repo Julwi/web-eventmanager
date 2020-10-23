@@ -1,11 +1,16 @@
 from datetime import datetime
-from time import strptime, strftime, mktime
+from time import localtime, strptime, strftime
+import queue
 
-from flask import flash, url_for, redirect, render_template, request, session, abort
+from flask import flash, url_for, redirect, render_template, request, session, abort, current_app
 from app import app, bcrypt, db
 from app.forms import LoginForm, RegistrationForm, EventForm
 from app.models import User, Event
 from flask_login import login_user, current_user, logout_user, login_required
+
+# Event validation variables
+events_completedq = queue.Queue()
+basis_seconds = datetime(1970, 1, 1)
 
 
 @app.after_request
@@ -80,11 +85,65 @@ def logout():
     return redirect(url_for("home"))
 
 
-@app.route("/overview")
+@app.route("/overview", methods=["GET"])
 @login_required
 def overview():
     events = Event.query.filter_by(user_id=current_user.id)
+
+    # Process completed events
+    if not events_completedq.empty():
+        event_id = int(events_completedq.get())
+        app.apscheduler.remove_job(str(event_id))
+        print("removed job with id {}." .format(event_id))
+        events_completedq.task_done()
+    
+    # Check if any events are completed
+    # Move event into archive
+    # Display alarm 
+
+
+    current_jobs = app.apscheduler.get_jobs()
+    for event in events:
+
+        # Check if job is already running
+        job_running = False
+        for job in current_jobs:
+            if job.name == str(event.id):
+                job_running = True
+                continue
+
+        # Continue or create job check_date for event
+        if job_running:
+            break
+        app.apscheduler.add_job(func=check_date, trigger='cron', minute='*', args=[
+                                event.id, event.date_eventdatetime], id=str(event.id))
+
     return render_template("overview.html", title="Overview", events=events)
+
+
+def check_date(event_id, event_datetime):
+    """
+    Scheduled function to check event date every minute. 
+    Passes the event id to global queue if event is completed.
+
+    Parameters:
+    event_id (str): Event id of respective event as a string.
+    event_datetime (datetime.datetime): Scheduled datetime of event. 
+    """
+    completed = False
+
+    # Get current time
+    current_datetime = strftime("%m/%d/%Y %I:%M %p", localtime())
+    time_current = datetime.strptime(current_datetime, "%m/%d/%Y %I:%M %p")
+
+    # Check if event is in the past
+    if (time_current-basis_seconds).total_seconds() > (event_datetime-basis_seconds).total_seconds():
+        completed = True
+        events_completedq.put(event_id)
+
+    # Status
+    print("Job for event id {} is alive. Event completed: {}." .format(
+        event_id, completed))
 
 
 @app.route("/create", methods=["GET", "POST"])
@@ -121,7 +180,8 @@ def update(event_id):
     # If entered values are valid commit changes to db
     if form.validate_on_submit():
         event.title = form.title.data
-        event.date_eventdatetime = datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
+        event.date_eventdatetime = datetime.strptime(
+            form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
         event.description = form.description.data
         db.session.commit()
         flash("Your event has been updated!", "success")
@@ -130,7 +190,8 @@ def update(event_id):
     # Fill form with event data from db
     if request.method == "GET":
         form.title.data = event.title
-        form.eventdatetime.data = event.date_eventdatetime.strftime("%m/%d/%Y %I:%M %p")
+        form.eventdatetime.data = event.date_eventdatetime.strftime(
+            "%m/%d/%Y %I:%M %p")
         form.description.data = event.description
         form.submit.label.text = 'Update'
     return render_template("update.html", title="Update Event", event=event, form=form, legend="Update Post")
@@ -148,6 +209,7 @@ def delete(event_id):
     db.session.commit()
     flash("Event has been deleted", "success")
     return redirect(url_for("overview"))
+
 
 @app.route("/archive")
 @login_required
