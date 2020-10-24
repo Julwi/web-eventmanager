@@ -26,12 +26,13 @@ class User (db.Model, UserMixin):
 class Event (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
-    date_created = db.Column(
+    created = db.Column(
         db.DateTime, nullable=False, default=datetime.utcnow)
-    date_eventdatetime = db.Column(db.DateTime, nullable=False)
+    due_date = db.Column(db.DateTime, nullable=False)
     description = db.Column(db.Text)
+    archived = db.Column(db.Boolean, nullable=False, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         """ Define print format for event """
-        return f"Event('{self.title}', '{self.date_created}', '{self.date_eventdatetime}', '{self.author})"
+        return f"Event('{self.title}', '{self.created}', '{self.due_date}', '{self.archived}', '{self.author})"
