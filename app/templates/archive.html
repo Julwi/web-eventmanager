@@ -1,7 +1,37 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container">
-    <h1>Archive here!</h1>
+<div class="container_colored">
+    <div class="container_content container_table">
+        <table class="table table-dark">
+            <thead>
+                <tr>
+                    <th scope="col" class="left_element">#</th>
+                    <th scope="col">Event Title</th>
+                    <th scope="col">Due Date</th>
+                  </tr>
+            </thead>
+            <tbody>
+            {% if events is defined and events|length > 0 %}
+                {% for event in events %}
+                    <tr>
+                    <th scope="row" class="left_element">{{loop.index}}</th>
+                    <td>{{event.title}}</td>
+                    <td>{{event.due_date}}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <th scope="row" class="left_element"></th>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        {% if events|length == 0 %}
+        <h1>Nothing to show yet</h1>
+        {% endif %}
+    </div>
 </div>
 {% endblock content %}

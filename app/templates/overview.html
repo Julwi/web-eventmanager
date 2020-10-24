@@ -9,7 +9,7 @@
             {% if event.user_id == current_user.id %}
             <div id=event_field_{{event.id}} title="{{event.description}}" class="event" data-toggle="tooltip" data-placement="bottom">
                         <h3>{{event.title}}</h3>
-                        <small class="border-top pt-1"><i>Due Date:</i><br> {{event.date_eventdatetime}}</small>
+                        <small class="border-top pt-1"><i>Due Date:</i><br> {{event.due_date}}</small>
                         <span class="link_flexbox_container">
                             <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{url_for("update", event_id=event.id)}}">Update</a>
                             <button data-id="{{event.id}}" type="button" class="passid btn btn-danger btn-sm mt-1 mb-1" data-toggle="modal" data-target="#deleteModal">Delete</button>

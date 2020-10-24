@@ -154,7 +154,7 @@ def create():
     # If entered values are valid commit event to db
     if form.validate_on_submit():
         event = Event(title=form.title.data,
-                      date_eventdatetime=datetime.strptime(
+                      due_date=datetime.strptime(
                           form.eventdatetime.data, "%m/%d/%Y %I:%M %p"),
                       description=form.description.data,
                       user_id=current_user.id)
@@ -180,8 +180,7 @@ def update(event_id):
     # If entered values are valid commit changes to db
     if form.validate_on_submit():
         event.title = form.title.data
-        event.date_eventdatetime = datetime.strptime(
-            form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
+        event.due_date = datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
         event.description = form.description.data
         db.session.commit()
         flash("Your event has been updated!", "success")
@@ -190,8 +189,7 @@ def update(event_id):
     # Fill form with event data from db
     if request.method == "GET":
         form.title.data = event.title
-        form.eventdatetime.data = event.date_eventdatetime.strftime(
-            "%m/%d/%Y %I:%M %p")
+        form.eventdatetime.data = event.due_date.strftime("%m/%d/%Y %I:%M %p")
         form.description.data = event.description
         form.submit.label.text = 'Update'
     return render_template("update.html", title="Update Event", event=event, form=form, legend="Update Post")
@@ -214,4 +212,5 @@ def delete(event_id):
 @app.route("/archive")
 @login_required
 def archive():
-    return render_template("archive.html", title="Register")
+    events = Event.query.filter_by(user_id=current_user.id).filter_by(archived=True).all()
+    return render_template("archive.html", title="Archive", events=events)

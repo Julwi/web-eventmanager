@@ -45,7 +45,7 @@ class EventForm(FlaskForm):
     description = TextAreaField("Description")
     submit = SubmitField()
 
-    def validate_eventdatetime(self, eventdatetime):
+    def validue_date(self, eventdatetime):
         basis_seconds = datetime(1970, 1, 1)
         current_datetime = strftime("%m/%d/%Y %I:%M %p", localtime())
         time_current = datetime.strptime(current_datetime, "%m/%d/%Y %I:%M %p")
