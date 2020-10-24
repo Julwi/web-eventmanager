@@ -12,23 +12,26 @@
                   </tr>
             </thead>
             <tbody>
-                <tr>
-                  <th scope="row" class="left_element">1</th>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                </tr>
-                <tr>
-                  <th scope="row" class="left_element">2</th>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                </tr>
-                <tr>
-                  <th scope="row" class="left_element">3</th>
-                  <td>Larry</td>
-                  <td>the Bird</td>
-                </tr>
-              </tbody>
+            {% if events is defined and events|length > 0 %}
+                {% for event in events %}
+                    <tr>
+                    <th scope="row" class="left_element">{{loop.index}}</th>
+                    <td>{{event.title}}</td>
+                    <td>{{event.due_date}}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <th scope="row" class="left_element"></th>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+            </tbody>
         </table>
+        {% if events|length == 0 %}
+        <h1>Nothing to show yet</h1>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}

@@ -152,4 +152,5 @@ def delete(event_id):
 @app.route("/archive")
 @login_required
 def archive():
-    return render_template("archive.html", title="Register")
+    events = Event.query.filter_by(user_id=current_user.id).filter_by(archived=True).all()
+    return render_template("archive.html", title="Archive", events=events)

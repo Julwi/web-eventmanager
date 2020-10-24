@@ -355,6 +355,11 @@ form textarea#description {
     width: 50%;
 }
 
+.container_table h1 {
+    text-align: center;
+    margin-top: 70px;
+}
+
 .table {
     border-radius: 25px;
 }
