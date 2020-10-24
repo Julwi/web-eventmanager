@@ -1,11 +1,14 @@
 from datetime import datetime
-from time import strptime, strftime, mktime
+from time import strptime
 
-from flask import flash, url_for, redirect, render_template, request, session, abort
+from flask import (abort, flash, redirect, render_template, request, session,
+                   url_for)
+from flask_login import current_user, login_required, login_user, logout_user
+
 from app import app, bcrypt, db
-from app.forms import LoginForm, RegistrationForm, EventForm
-from app.models import User, Event
-from flask_login import login_user, current_user, logout_user, login_required
+from app.forms import EventForm, LoginForm, RegistrationForm
+from app.models import Event, User
+from app.scheduler import schedule_event_monitoring, events_completed
 
 
 @app.after_request
@@ -80,10 +83,29 @@ def logout():
     return redirect(url_for("home"))
 
 
-@app.route("/overview")
+@app.route("/overview", methods=["GET"])
 @login_required
 def overview():
-    events = Event.query.filter_by(user_id=current_user.id)
+
+    # Process completed events
+    if not events_completed.empty():
+
+        # Get id and stop check_date job
+        event_id = int(events_completed.get())
+        app.apscheduler.remove_job(str(event_id))
+        print("Removed job with id {}." .format(event_id))
+        
+        # Flag completed event and send message
+        event = Event.query.filter_by(id=event_id).first()
+        event.archived = True
+        db.session.commit()
+        flash(f'Event "{event.title}" is due! It was moved to the archive.', "warning")
+        events_completed.task_done()
+    
+
+    events = Event.query.filter_by(user_id=current_user.id).filter_by(archived=False)
+    current_jobs = app.apscheduler.get_jobs()
+    schedule_event_monitoring(events, current_jobs)
     return render_template("overview.html", title="Overview", events=events)
 
 
@@ -148,6 +170,7 @@ def delete(event_id):
     db.session.commit()
     flash("Event has been deleted", "success")
     return redirect(url_for("overview"))
+
 
 @app.route("/archive")
 @login_required

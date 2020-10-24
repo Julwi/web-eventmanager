@@ -7,6 +7,7 @@ from tempfile import mkdtemp
 from flask import Flask, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
+from flask_apscheduler import APScheduler
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from werkzeug.exceptions import (HTTPException, InternalServerError,
@@ -32,6 +33,11 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
+# Configure Flask_APScheduler
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
@@ -40,5 +46,5 @@ Session(app)
 
 # Bottom imports to avoid circle import problems
 # Routes import from app package too
-# One directs to __init__.py with package name "app"
+# You can access __init__.py with package name "app"
 from app import routes
