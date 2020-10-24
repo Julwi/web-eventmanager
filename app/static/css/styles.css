@@ -345,6 +345,33 @@ form textarea#description {
 }
 
 /* 
+#########################################
+# Table Styling
+#########################################
+*/ 
+
+.container_content.container_table {
+    min-height: 400px;
+    width: 50%;
+}
+
+.table {
+    border-radius: 25px;
+}
+
+.table-dark {
+    background-color: #333333 !important;
+}
+
+.table thead th {
+    border-top: none !important;
+}
+
+.table .left_element {
+    padding-left: 25px;
+}
+
+/* 
 media query after the original classes so they will be overwritten
 */
 

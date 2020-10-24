@@ -1,7 +1,34 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container">
-    <h1>Archive here!</h1>
+<div class="container_colored">
+    <div class="container_content container_table">
+        <table class="table table-dark">
+            <thead>
+                <tr>
+                    <th scope="col" class="left_element">#</th>
+                    <th scope="col">Event Title</th>
+                    <th scope="col">Due Date</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <tr>
+                  <th scope="row" class="left_element">1</th>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                </tr>
+                <tr>
+                  <th scope="row" class="left_element">2</th>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                </tr>
+                <tr>
+                  <th scope="row" class="left_element">3</th>
+                  <td>Larry</td>
+                  <td>the Bird</td>
+                </tr>
+              </tbody>
+        </table>
+    </div>
 </div>
 {% endblock content %}
