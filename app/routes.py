@@ -2,14 +2,14 @@ from datetime import datetime
 from time import localtime, strptime, strftime
 import queue
 
-from flask import flash, url_for, redirect, render_template, request, session, abort, current_app
+from flask import flash, url_for, redirect, render_template, request, session, abort
 from app import app, bcrypt, db
 from app.forms import LoginForm, RegistrationForm, EventForm
 from app.models import User, Event
 from flask_login import login_user, current_user, logout_user, login_required
 
 # Event validation variables
-events_completedq = queue.Queue()
+events_completed = queue.Queue()
 basis_seconds = datetime(1970, 1, 1)
 
 
@@ -88,21 +88,38 @@ def logout():
 @app.route("/overview", methods=["GET"])
 @login_required
 def overview():
-    events = Event.query.filter_by(user_id=current_user.id)
 
     # Process completed events
-    if not events_completedq.empty():
-        event_id = int(events_completedq.get())
+    if not events_completed.empty():
+
+        # Get id and stop check_date job
+        event_id = int(events_completed.get())
         app.apscheduler.remove_job(str(event_id))
-        print("removed job with id {}." .format(event_id))
-        events_completedq.task_done()
+        print("Removed job with id {}." .format(event_id))
+        
+        # Flag completed event and send message
+        event = Event.query.filter_by(id=event_id).first()
+        event.archived = True
+        db.session.commit()
+        flash(f'Event "{event.title}" is due! It was moved to the archive.', "warning")
+        events_completed.task_done()
     
-    # Check if any events are completed
-    # Move event into archive
-    # Display alarm 
 
-
+    events = Event.query.filter_by(user_id=current_user.id).filter_by(archived=False)
     current_jobs = app.apscheduler.get_jobs()
+    schedule_event_monitoring(events, current_jobs)
+    return render_template("overview.html", title="Overview", events=events)
+
+
+def schedule_event_monitoring(events, current_jobs):
+    """
+    Checks for each event if a due date check is performed.
+    If not a new job 'check_date' is created and started.
+    
+    Parameter:
+    events (Event.query): Query that contains all events for current user.
+    current_jobs (list): List that contains all jobs of the current apscheduler instance.
+    """
     for event in events:
 
         # Check if job is already running
@@ -112,23 +129,22 @@ def overview():
                 job_running = True
                 continue
 
-        # Continue or create job check_date for event
+        # Break or create job 'check_date' for event
         if job_running:
             break
-        app.apscheduler.add_job(func=check_date, trigger='cron', minute='*', args=[
-                                event.id, event.date_eventdatetime], id=str(event.id))
+        else:
+            app.apscheduler.add_job(func=check_date, trigger='cron', minute='*', args=[
+                                event.id, event.due_date], id=str(event.id))
 
-    return render_template("overview.html", title="Overview", events=events)
 
-
-def check_date(event_id, event_datetime):
+def check_date(event_id, event_due_date):
     """
     Scheduled function to check event date every minute. 
     Passes the event id to global queue if event is completed.
 
     Parameters:
     event_id (str): Event id of respective event as a string.
-    event_datetime (datetime.datetime): Scheduled datetime of event. 
+    event_due_date (datetime.datetime): Scheduled datetime of event. 
     """
     completed = False
 
@@ -137,9 +153,9 @@ def check_date(event_id, event_datetime):
     time_current = datetime.strptime(current_datetime, "%m/%d/%Y %I:%M %p")
 
     # Check if event is in the past
-    if (time_current-basis_seconds).total_seconds() > (event_datetime-basis_seconds).total_seconds():
+    if (time_current-basis_seconds).total_seconds() > (event_due_date-basis_seconds).total_seconds():
         completed = True
-        events_completedq.put(event_id)
+        events_completed.put(event_id)
 
     # Status
     print("Job for event id {} is alive. Event completed: {}." .format(
