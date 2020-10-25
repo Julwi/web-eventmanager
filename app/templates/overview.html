@@ -41,6 +41,56 @@
   </div>
 </div>
 <script>
+  // Max Value
+  var nextDueDate = new Date(8640000000000000);
+  var nextDueEventId = "";
+  var nextDueEventTitle = "";
+
+  console.log("nextDueDate (initial): ", nextDueDate);
+
+  var events = document.querySelectorAll('[id^="event_field_"]');
+  // console.log(events)
+  events.forEach(event => {
+    // Get due dates from events and convert into Date()
+    console.log("Current global nextDueDate: ", nextDueDate);
+    var eventDateStr = event.querySelector('small').textContent;
+    eventDateStr = eventDateStr.split("Due Date:").pop();
+    var eventDate = new Date(eventDateStr);
+    console.log(event.id, " eventDate: ", eventDate);
+    console.log("Milliseconds to next event ", eventDate - Date.now());
+    console.log("Milliseconds to current nextDueDate " ,nextDueDate - Date.now());
+
+    if ((eventDate - Date.now()) < (nextDueDate - Date.now())) {
+      nextDueDate = eventDate;
+      nextDueEventId = event.id;
+      nextDueEventTitle = event.querySelector('h3').textContent;
+      console.log("New nextDueDate: ",nextDueDate);
+      console.log("Set new nextDueDate")
+    }
+
+    // console.log(eventDate);
+    // console.log(event.children);
+  });
+
+  console.log("Final nextDueDate: ", nextDueDate);
+  console.log("Final nextDueDEventId: ", nextDueEventId);
+  // var time =  Math.abs(new Date(nextDueDate) - Date.now());
+  var time = 2000;
+  // console.log(new Date(nextDueDate));
+  // console.log(Date.now());
+  // console.log(new Date(nextDueDate)-Date.now());
+
+
+  setTimeout(function(){ 
+    var eventId = "event_field_";
+    eventId = eventId.concat(nextDueEventId);
+    console.log(eventId);
+    var y = document.getElementById(nextDueEventId);
+    y.style.background = "red";
+    alert(nextDueEventTitle + " is due!");
+  }, time);
+</script>
+<script>
   // Pass event id to modal for deletion route
   $(document).on("click", ".passid", function () {
      var myEventId = $(this).data('id');
