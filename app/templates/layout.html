@@ -92,9 +92,9 @@
     <section id="showcase">
         <div class="container_showcase">
             {% if current_user.is_authenticated %}
-            <h1> Hello {{current_user.username}} and your id is {{current_user.id}}</h1>
+            <h1> Hello {{current_user.username}}! <br> See what´s coming next</h1>
             {% else %}
-            <h1>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            <h1>Keep track of the things that matter most to you
             </h1>
             {% endif %}
         </div>

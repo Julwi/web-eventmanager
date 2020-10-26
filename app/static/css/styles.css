@@ -186,7 +186,7 @@ visibility: visible;
 
 #showcase{
 	background-image:url("/static/images/showcase.jpg");
-    background-position: center;
+    background-position: 50% 69%;
     background-repeat: no-repeat;
     background-size: cover;
 	min-height:400px;
@@ -197,7 +197,7 @@ visibility: visible;
 	color: #FCFAF9;
 	font-size: 50px;
 	line-height: 1.6em;
-	padding-top: 100px;
+	padding-top: 150px;
 }
 
 /* 
@@ -245,6 +245,13 @@ visibility: visible;
 	color:#FCFAF9;
 	text-align: center;
 	padding:20px;
+}
+
+.dummy_text {
+    text-align: center;
+    margin-top: 70px;
+    margin-bottom: 70px;
+    line-height: 1.6em;
 }
 
 /* 
@@ -299,6 +306,8 @@ visibility: visible;
 .container_forms {
     background-color: #f9f8f7;
     width: 25%;
+    margin-top: 30px;
+    margin-bottom: 30px;
     margin-left: auto;
     margin-right: auto;
     padding: 10px 25px;
@@ -353,11 +362,6 @@ form textarea#description {
 .container_content.container_table {
     min-height: 400px;
     width: 50%;
-}
-
-.container_table h1 {
-    text-align: center;
-    margin-top: 70px;
 }
 
 .table {

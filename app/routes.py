@@ -8,7 +8,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from app import app, bcrypt, db
 from app.forms import EventForm, LoginForm, RegistrationForm
 from app.models import Event, User
-from app.scheduler import schedule_event_monitoring, events_completed
+from app.scheduler import schedule_jobs, events_completed
 
 
 @app.after_request
@@ -87,6 +87,13 @@ def logout():
 @login_required
 def overview():
 
+    # Run existing jobs on pageload
+    current_jobs = app.apscheduler.get_jobs()
+    if current_jobs:
+        print("Start jobs on pageload")
+        for job in current_jobs:
+            job.modify(next_run_time=datetime.now())
+
     # Process completed events
     if not events_completed.empty():
 
@@ -94,18 +101,18 @@ def overview():
         event_id = int(events_completed.get())
         app.apscheduler.remove_job(str(event_id))
         print("Removed job with id {}." .format(event_id))
-        
+
         # Flag completed event and send message
         event = Event.query.filter_by(id=event_id).first()
         event.archived = True
         db.session.commit()
-        flash(f'Event "{event.title}" is due! It was moved to the archive.', "warning")
+        flash(
+            f'Event "{event.title}" was due! It has been moved to the archive.', "warning")
         events_completed.task_done()
-    
 
-    events = Event.query.filter_by(user_id=current_user.id).filter_by(archived=False)
-    current_jobs = app.apscheduler.get_jobs()
-    schedule_event_monitoring(events, current_jobs)
+    events = Event.query.filter_by(
+        user_id=current_user.id).filter_by(archived=False)
+    schedule_jobs(events, current_jobs)
     return render_template("overview.html", title="Overview", events=events)
 
 
@@ -143,7 +150,8 @@ def update(event_id):
     # If entered values are valid commit changes to db
     if form.validate_on_submit():
         event.title = form.title.data
-        event.due_date = datetime.strptime(form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
+        event.due_date = datetime.strptime(
+            form.eventdatetime.data, "%m/%d/%Y %I:%M %p")
         event.description = form.description.data
         db.session.commit()
         flash("Your event has been updated!", "success")
@@ -168,6 +176,7 @@ def delete(event_id):
 
     db.session.delete(event)
     db.session.commit()
+    app.apscheduler.remove_job(str(event_id))
     flash("Event has been deleted", "success")
     return redirect(url_for("overview"))
 
@@ -175,5 +184,6 @@ def delete(event_id):
 @app.route("/archive")
 @login_required
 def archive():
-    events = Event.query.filter_by(user_id=current_user.id).filter_by(archived=True).all()
+    events = Event.query.filter_by(
+        user_id=current_user.id).filter_by(archived=True).all()
     return render_template("archive.html", title="Archive", events=events)

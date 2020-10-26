@@ -3,23 +3,27 @@
 {% block content %}
 <div class="container_colored">
     <div class="container_content">
-        {% for event_rows in events | batch(3, '&nbsp;') %}
-        <div class="container_flexbox_events">
-            {% for event in event_rows %}
-            {% if event.user_id == current_user.id %}
-            <div id=event_field_{{event.id}} title="{{event.description}}" class="event" data-toggle="tooltip" data-placement="bottom">
-                        <h3>{{event.title}}</h3>
-                        <small class="border-top pt-1"><i>Due Date:</i><br> {{event.due_date}}</small>
-                        <span class="link_flexbox_container">
-                            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{url_for("update", event_id=event.id)}}">Update</a>
-                            <button data-id="{{event.id}}" type="button" class="passid btn btn-danger btn-sm mt-1 mb-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
-                        </span>
-                    </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-        {% endfor %}
-    </div>
+      {% if events.all()|length == 0 %}
+      <h1 class="dummy_text">Nothing is planned yet <br> Get started with <b>Create Event</b></h1>
+      {% else %}
+      {% for event_rows in events | batch(3, '&nbsp;') %}
+      <div class="container_flexbox_events">
+          {% for event in event_rows %}
+          {% if event.user_id == current_user.id %}
+          <div id=event_field_{{event.id}} title="{{event.description}}" class="event" data-toggle="tooltip" data-placement="bottom">
+                      <h3>{{event.title}}</h3>
+                      <small class="border-top pt-1"><i>Due Date:</i><br> {{event.due_date}}</small>
+                      <span class="link_flexbox_container">
+                          <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{url_for("update", event_id=event.id)}}">Update</a>
+                          <button data-id="{{event.id}}" type="button" class="passid btn btn-danger btn-sm mt-1 mb-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                      </span>
+                  </div>
+          {% endif %}
+          {% endfor %}
+      </div>
+      {% endfor %}
+      {% endif %}
+  </div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -41,52 +45,35 @@
   </div>
 </div>
 <script>
-  // Max Value
+  // Set variables for event time check 
   var nextDueDate = new Date(8640000000000000);
   var nextDueEventId = "";
   var nextDueEventTitle = "";
 
-  console.log("nextDueDate (initial): ", nextDueDate);
-
   var events = document.querySelectorAll('[id^="event_field_"]');
-  // console.log(events)
   events.forEach(event => {
+
     // Get due dates from events and convert into Date()
-    console.log("Current global nextDueDate: ", nextDueDate);
     var eventDateStr = event.querySelector('small').textContent;
     eventDateStr = eventDateStr.split("Due Date:").pop();
     var eventDate = new Date(eventDateStr);
-    console.log(event.id, " eventDate: ", eventDate);
-    console.log("Milliseconds to next event ", eventDate - Date.now());
-    console.log("Milliseconds to current nextDueDate " ,nextDueDate - Date.now());
 
+    // If current event is due earlier updated variables
     if ((eventDate - Date.now()) < (nextDueDate - Date.now())) {
       nextDueDate = eventDate;
       nextDueEventId = event.id;
       nextDueEventTitle = event.querySelector('h3').textContent;
-      console.log("New nextDueDate: ",nextDueDate);
-      console.log("Set new nextDueDate")
     }
-
-    // console.log(eventDate);
-    // console.log(event.children);
   });
 
-  console.log("Final nextDueDate: ", nextDueDate);
-  console.log("Final nextDueDEventId: ", nextDueEventId);
-  // var time =  Math.abs(new Date(nextDueDate) - Date.now());
-  var time = 2000;
-  // console.log(new Date(nextDueDate));
-  // console.log(Date.now());
-  // console.log(new Date(nextDueDate)-Date.now());
+  // Get milliseconds until next event
+  var time =  Math.abs(nextDueDate - Date.now());
+  console.log("Next event due in ", time, "(ms).")
 
-
+  // Display alarm and change color
   setTimeout(function(){ 
-    var eventId = "event_field_";
-    eventId = eventId.concat(nextDueEventId);
-    console.log(eventId);
-    var y = document.getElementById(nextDueEventId);
-    y.style.background = "red";
+    var event = document.getElementById(nextDueEventId);
+    event.style.background = "red";
     alert(nextDueEventTitle + " is due!");
   }, time);
 </script>

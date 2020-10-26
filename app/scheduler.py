@@ -2,13 +2,20 @@ import queue
 from datetime import datetime
 from time import localtime, strftime, strptime
 
+from apscheduler.triggers.combining import OrTrigger
+from apscheduler.triggers.date import DateTrigger
+from apscheduler.triggers.cron import CronTrigger
+
 from app import app
 
 # Event validation variables
 events_completed = queue.Queue()
 basis_seconds = datetime(1970, 1, 1)
 
-def schedule_event_monitoring(events, current_jobs):
+# Trigger 
+# trigger = OrTrigger([DateTrigger(), CronTrigger(minute="*")])
+
+def schedule_jobs(events, current_jobs):
     """
     Checks for each event if a due date check is performed.
     If not a new job 'check_date' is created and started.
@@ -25,12 +32,13 @@ def schedule_event_monitoring(events, current_jobs):
             if job.name == str(event.id):
                 job_running = True
                 continue
-
-        # Break or create job 'check_date' for event
+        
+        # Continue or create job 'check_date' for event
         if job_running:
-            break
+            continue
         else:
-            app.apscheduler.add_job(func=check_date, trigger='cron', minute='*', args=[
+            print("Started jobs")
+            app.apscheduler.add_job(func=check_date, trigger='cron', minute="*", args=[
                 event.id, event.due_date], id=str(event.id))
 
 
@@ -50,7 +58,7 @@ def check_date(event_id, event_due_date):
     time_current = datetime.strptime(current_datetime, "%m/%d/%Y %I:%M %p")
 
     # Check if event is in the past
-    if (time_current-basis_seconds).total_seconds() > (event_due_date-basis_seconds).total_seconds():
+    if (time_current-basis_seconds).total_seconds() >= (event_due_date-basis_seconds).total_seconds():
         completed = True
         events_completed.put(event_id)
 
