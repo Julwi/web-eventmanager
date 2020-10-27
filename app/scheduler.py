@@ -2,18 +2,12 @@ import queue
 from datetime import datetime
 from time import localtime, strftime, strptime
 
-from apscheduler.triggers.combining import OrTrigger
-from apscheduler.triggers.date import DateTrigger
-from apscheduler.triggers.cron import CronTrigger
-
 from app import app
 
 # Event validation variables
 events_completed = queue.Queue()
 basis_seconds = datetime(1970, 1, 1)
 
-# Trigger 
-# trigger = OrTrigger([DateTrigger(), CronTrigger(minute="*")])
 
 def schedule_jobs(events, current_jobs):
     """
@@ -32,7 +26,7 @@ def schedule_jobs(events, current_jobs):
             if job.name == str(event.id):
                 job_running = True
                 continue
-        
+
         # Continue or create job 'check_date' for event
         if job_running:
             continue
